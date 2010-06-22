@@ -1,11 +1,14 @@
 
+TEST_SUPPORT = \
+	test/etap.beam
+
 %.beam: %.erl
 	erlc -o test/ $<
 
 all:
 	./rebar compile
 
-check: test/etap.beam test/util.beam
+check: $(TEST_SUPPORT)
 	prove test/*.t
 
 clean:

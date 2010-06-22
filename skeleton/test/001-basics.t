@@ -5,6 +5,6 @@ main([]) ->
     code:add_pathz("ebin"),
 
     etap:plan(1),
-    etap:can_load(skeleton),
+    etap:loaded_ok(skeleton, "skeleton module."),
     etap:end_tests().
 

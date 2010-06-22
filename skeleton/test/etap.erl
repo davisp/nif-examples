@@ -104,7 +104,6 @@
 %%       Result = ok
 %% @doc Create a test plan and boot strap the test server.
 plan(unknown) ->
-    ensure_coverage_starts(),
     ensure_test_server(),
     etap_server ! {self(), plan, unknown},
     ok;
@@ -113,7 +112,6 @@ plan(skip) ->
 plan({skip, Reason}) ->
     io:format("1..0 # skip ~s~n", [Reason]);
 plan(N) when is_integer(N), N > 0 ->
-    ensure_coverage_starts(),
     ensure_test_server(),
     etap_server ! {self(), plan, N},
     ok.
@@ -122,7 +120,6 @@ plan(N) when is_integer(N), N > 0 ->
 %% @doc End the current test plan and output test results.
 %% @todo This should probably be done in the test_server process.
 end_tests() ->
-    ensure_coverage_ends(),
     case whereis(etap_server) of
         undefined -> self() ! true;
         _ -> etap_server ! {self(), state}
@@ -144,7 +141,6 @@ bail() ->
 
 bail(Reason) ->
     etap_server ! {self(), diag, "Bail out! " ++ Reason},
-    ensure_coverage_ends(),
     etap_server ! done, ok,
     ok.
 
