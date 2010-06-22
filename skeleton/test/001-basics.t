@@ -4,7 +4,14 @@ main([]) ->
     code:add_pathz("test"),
     code:add_pathz("ebin"),
 
-    etap:plan(1),
-    etap:loaded_ok(skeleton, "skeleton module."),
+    Modules = [
+        skeleton
+    ],
+
+    etap:plan(length(Modules)),
+    lists:foreach(fun(Mod) ->
+        Mesg = atom_to_list(Mod) ++ " module loaded",
+        etap:loaded_ok(Mod, Mesg)
+    end, Modules),
     etap:end_tests().
 
