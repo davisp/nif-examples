@@ -2,6 +2,16 @@
 -export([skeleton/1]).
 -on_load(init/0).
 
+% The name of the application we're writing. This is the name
+% used for the Erlang .app file.
+
+-define(APPNAME, skeleton).
+
+% The name of the shared library we're going to load the NIF
+% code from. Defined in rebar.config as so_name.
+
+-define(LIBNAME, skeleton).
+
 %% API
 
 % NIF functions end up overriding the functions defined in this module. But
@@ -24,16 +34,16 @@ skeleton(_) ->
 % functions.
 
 init() ->
-    SoName = case code:priv_dir(skeleton) of
+    SoName = case code:priv_dir(?APPNAME) of
         {error, bad_name} ->
             case filelib:is_dir(filename:join(["..", priv])) of
                 true ->
-                    filename:join(["..", priv, skeleton]);
+                    filename:join(["..", priv, ?LIBNAME]);
                 _ ->
-                    filename:join([priv, skeleton])
+                    filename:join([priv, ?LIBNAME])
             end;
         Dir ->
-            filename:join(Dir, skeleton)
+            filename:join(Dir, ?LIBNAME)
     end,
     erlang:load_nif(SoName, 0).
 
