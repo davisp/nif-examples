@@ -107,7 +107,7 @@ ErlNifPid
 queue_pop(queue_t* queue)
 {
     qitem_t* item;
-    ErlNifPid* ret;
+    ErlNifPid ret = (ErlNifPid) -1;
 
     enif_mutex_lock(queue->lock);
 
@@ -138,10 +138,10 @@ thr_main(void* obj)
 {
     state_t* state = (state_t*) obj;
     ErlNifEnv* env = enif_alloc_env();
-    ErlNifPid* pid;
+    ErlNifPid pid;
     ERL_NIF_TERM msg;
 
-    while((pid = queue_pop(state->queue)) != NULL)
+    while((pid = queue_pop(state->queue)) != (ErlNifPid) -1)
     {
         msg = enif_make_int64(env, random());
         enif_send(NULL, pid, env, msg);
