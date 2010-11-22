@@ -4,7 +4,7 @@
 typedef struct _qitem_t
 {
     struct _qitem_t*    next;
-    ErlNifPid           pid;
+    ErlNifPid*          pid;
 } qitem_t;
 
 typedef struct
@@ -75,7 +75,7 @@ queue_destroy(queue_t* queue)
 }
 
 int
-queue_push(queue_t* queue, ErlNifPid pid)
+queue_push(queue_t* queue, ErlNifPid* pid)
 {
     qitem_t* item = (qitem_t*) enif_alloc(sizeof(qitem_t));
     if(item == NULL) return 0;
@@ -103,11 +103,11 @@ queue_push(queue_t* queue, ErlNifPid pid)
     return 1;
 }
 
-ErlNifPid
+ErlNifPid*
 queue_pop(queue_t* queue)
 {
     qitem_t* item;
-    ErlNifPid ret = (ErlNifPid) -1;
+    ErlNifPid* ret = NULL;
 
     enif_mutex_lock(queue->lock);
 
@@ -138,13 +138,14 @@ thr_main(void* obj)
 {
     state_t* state = (state_t*) obj;
     ErlNifEnv* env = enif_alloc_env();
-    ErlNifPid pid;
+    ErlNifPid* pid;
     ERL_NIF_TERM msg;
 
-    while((pid = queue_pop(state->queue)) != (ErlNifPid) -1)
+    while((pid = queue_pop(state->queue)) != NULL)
     {
         msg = enif_make_int64(env, random());
         enif_send(NULL, pid, env, msg);
+        enif_free(pid);
         enif_clear_env(env);
     }
 
@@ -168,7 +169,7 @@ load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
         goto error;
     }
 
-    state->atom_ok = enif_make_atom("ok");
+    state->atom_ok = enif_make_atom(env, "ok");
 
     *priv = (void*) state;
 
@@ -177,7 +178,7 @@ load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 error:
     if(state->queue != NULL) queue_destroy(state->queue);
     enif_free(state->queue);
-    return NULL;
+    return -1;
 }
 
 static void
@@ -187,7 +188,7 @@ unload(ErlNifEnv* env, void* priv)
     void* resp;
     
     queue_push(state->queue, NULL);
-    enif_thread_join(state->tid, &resp);
+    enif_thread_join(state->qthread, &resp);
     queue_destroy(state->queue);
 
     enif_thread_opts_destroy(state->opts);
@@ -198,9 +199,9 @@ static ERL_NIF_TERM
 send_to_pid(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     state_t* state = (state_t*) enif_priv_data(env);
-    ErlNifPid pid;
+    ErlNifPid* pid = (ErlNifPid*) enif_alloc(sizeof(ErlNifPid));
 
-    if(!enif_get_local_pid(env, argv[0], &pid))
+    if(!enif_get_local_pid(env, argv[0], pid))
     {
         return enif_make_badarg(env);
     }
@@ -214,9 +215,9 @@ static ERL_NIF_TERM
 send_to_self(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     state_t* state = (state_t*) enif_priv_data(env);
-    ErlNifPid pid;
+    ErlNifPid* pid = (ErlNifPid*) enif_alloc(sizeof(ErlNifPid));
 
-    enif_self(env, &pid);
+    enif_self(env, pid);
 
     queue_push(state->queue, pid);
 

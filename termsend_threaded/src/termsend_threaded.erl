@@ -1,11 +1,14 @@
 -module(termsend_threaded).
--export([send/2]).
+-export([send_to_pid/1, send_to_self/0]).
 -on_load(init/0).
 
 -define(APPNAME, termsend_threaded).
 -define(LIBNAME, termsend_threaded).
 
-send(_, _) ->
+send_to_pid(_) ->
+    not_loaded(?LINE).
+
+send_to_self() ->
     not_loaded(?LINE).
 
 init() ->
