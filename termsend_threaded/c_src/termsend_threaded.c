@@ -177,7 +177,7 @@ load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 
 error:
     if(state->queue != NULL) queue_destroy(state->queue);
-    enif_free(state->queue);
+    //enif_free(state->queue);  //double free bug ( already called free at queue_destroy() )
     return -1;
 }
 
@@ -229,5 +229,5 @@ static ErlNifFunc nif_funcs[] = {
     {"send_to_self", 0, send_to_self}
 };
 
-ERL_NIF_INIT(termsend_threaded, nif_funcs, load, unload, NULL, NULL);
+ERL_NIF_INIT(termsend_threaded, nif_funcs, load, NULL, NULL, unload);
 
