@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ERL_LIBS="./apps/:$ERL_LIBS" exec erl
