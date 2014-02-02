@@ -229,5 +229,5 @@ static ErlNifFunc nif_funcs[] = {
     {"send_to_self", 0, send_to_self}
 };
 
-ERL_NIF_INIT(termsend_threaded, nif_funcs, load, unload, NULL, NULL);
+ERL_NIF_INIT(termsend_threaded, nif_funcs, &load, NULL, NULL, &unload);
 
