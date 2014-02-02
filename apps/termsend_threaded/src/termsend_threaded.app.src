@@ -1,7 +1,6 @@
-{application, skeleton, [
-    {description, "NIF Skeleton structure"},
+{application, termsend_threaded, [
+    {description, "NIF that sends terms from a thread."},
     {vsn, "0.0.0"},
-    {modules, [skeleton]},
     {registered, []},
     {applications, [kernel, stdlib]},
     {env, []}

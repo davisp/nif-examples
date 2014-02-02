@@ -1,0 +1,7 @@
+{application, termsend, [
+    {description, "Send terms from NIFs"},
+    {vsn, "0.0.0"},
+    {registered, []},
+    {applications, [kernel, stdlib]},
+    {env, []}
+]}.
