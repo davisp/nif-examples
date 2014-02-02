@@ -15,18 +15,6 @@ load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
     return 0;
 }
 
-// Called when someone wants to load something and something else is already
-// there. Docs could use an example of some sort.
-//
-// Return value of 0 indicates success.
-// Docs: http://erlang.org/doc/man/erl_nif.html#reload
-
-static int
-reload(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
-{
-    return 0;
-}
-
 // Called when changing versions of the C code for a module's NIF
 // implementation if I read the docs correctly.
 //
@@ -70,7 +58,7 @@ static ErlNifFunc nif_funcs[] = {
 // Args: (MODULE, ErlNifFunc funcs[], load, reload, upgrade, unload)
 // Docs: http://erlang.org/doc/man/erl_nif.html#ERL_NIF_INIT
 
-ERL_NIF_INIT(skeleton, nif_funcs, &load, &reload, &upgrade, &unload);
+ERL_NIF_INIT(skeleton, nif_funcs, &load, NULL, &upgrade, &unload);
 
 // Or if you don't need reload, upgrade, or unload.
 // ERL_NIF_INIT(skeleton, nif_funcs, &load, NULL, NULL, NULL);
