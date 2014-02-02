@@ -1,0 +1,7 @@
+{application, dirty_sched, [
+    {description, "Examples using dirty schedulers"},
+    {vsn, "0.0.0"},
+    {registered, []},
+    {applications, [kernel, stdlib]},
+    {env, []}
+]}.
