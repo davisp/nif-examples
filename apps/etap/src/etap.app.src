@@ -1,9 +1,0 @@
-{application, etap, [
-    {description, "Erlang Test Anything Protocol"},
-    {vsn, "0.3.4"},
-    {registered, []},
-    {applications, [
-        kernel,
-        stdlib
-    ]}
-]}.

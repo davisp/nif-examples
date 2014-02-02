@@ -143,7 +143,7 @@ thr_main(void* obj)
 
     while((pid = queue_pop(state->queue)) != NULL)
     {
-        msg = enif_make_int64(env, random());
+        msg = enif_make_atom(env, "foo");
         enif_send(NULL, pid, env, msg);
         enif_free(pid);
         enif_clear_env(env);
