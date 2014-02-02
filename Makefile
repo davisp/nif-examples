@@ -4,6 +4,7 @@ all:
 
 clean:
 	./rebar clean
+	rm -rf appps/*/priv/*.so
 	rm -rf apps/*/.eunit/
 
 check:
