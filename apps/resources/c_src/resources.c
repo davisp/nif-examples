@@ -21,7 +21,7 @@ free_res(ErlNifEnv* env, void* obj)
 }
 
 static int
-load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
+open_resource(ErlNifEnv* env)
 {
     const char* mod = "resources";
     const char* name = "Example";
@@ -30,13 +30,35 @@ load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 
     RES_TYPE = enif_open_resource_type(env, mod, name, free_res, flags, NULL);
     if(RES_TYPE == NULL) return -1;
-    
+    return 0;
+}
+
+static int
+load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
+{
+    if(open_resource(env) == -1) return -1;
+
     atom_ok = enif_make_atom(env, "ok");
 
     tracker = (Tracker*) enif_alloc(sizeof(Tracker));
     tracker->count = 0;
     *priv = (void*) tracker;
 
+    return 0;
+}
+
+// Erlang requires that we re-open resources on re-initialisation.
+static int
+reload(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
+{
+    if(open_resource(env) == -1) return -1;
+    return 0;
+}
+
+static int
+reload(ErlNifEnv* env, void** priv, void** old_priv, ERL_NIF_TERM load_info)
+{
+    if(open_resource(env) == -1) return -1;
     return 0;
 }
 
@@ -110,5 +132,5 @@ static ErlNifFunc nif_funcs[] = {
     {"read", 1, read}
 };
 
-ERL_NIF_INIT(resources, nif_funcs, &load, NULL, NULL, NULL);
+ERL_NIF_INIT(resources, nif_funcs, &load, &reload, &upgrade, NULL);
 
