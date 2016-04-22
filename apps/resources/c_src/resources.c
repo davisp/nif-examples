@@ -26,7 +26,6 @@ open_resource(ErlNifEnv* env)
     const char* mod = "resources";
     const char* name = "Example";
     int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
-    Tracker* tracker;
 
     RES_TYPE = enif_open_resource_type(env, mod, name, free_res, flags, NULL);
     if(RES_TYPE == NULL) return -1;
@@ -40,7 +39,7 @@ load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 
     atom_ok = enif_make_atom(env, "ok");
 
-    tracker = (Tracker*) enif_alloc(sizeof(Tracker));
+    Tracker* tracker = (Tracker*) enif_alloc(sizeof(Tracker));
     tracker->count = 0;
     *priv = (void*) tracker;
 
@@ -56,7 +55,7 @@ reload(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 }
 
 static int
-reload(ErlNifEnv* env, void** priv, void** old_priv, ERL_NIF_TERM load_info)
+upgrade(ErlNifEnv* env, void** priv, void** old_priv, ERL_NIF_TERM load_info)
 {
     if(open_resource(env) == -1) return -1;
     return 0;
